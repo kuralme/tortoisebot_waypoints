@@ -1,14 +1,12 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(tortoisebot_waypoints)
-
-## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
   rospy
   genmsg
   actionlib_msgs
   geometry_msgs
+  message_generation
 )
-
 catkin_python_setup()
 
 
@@ -32,6 +30,7 @@ generate_messages(
 catkin_package(
 	CATKIN_DEPENDS
 	rospy
+    message_runtime
 )
 
 ###########
@@ -58,5 +57,4 @@ if(CATKIN_ENABLE_TESTING)
   add_rostest(test/waypoints_test.test)
 endif()
 
-## Add folders to be run by python nosetests
-catkin_add_nosetests(test/waypoints_test_ros_acsrv.py)
+catkin_add_nosetests(test/waypoints_test_ros_as.py)
