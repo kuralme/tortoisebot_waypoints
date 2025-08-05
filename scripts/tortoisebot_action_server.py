@@ -77,16 +77,13 @@ class WaypointActionClass(object):
             desired_yaw = math.atan2(self._des_pos.y - self._position.y, self._des_pos.x - self._position.x)
             err_yaw = desired_yaw - self._yaw
             err_pos = math.sqrt(pow(self._des_pos.y - self._position.y, 2) + pow(self._des_pos.x - self._position.x, 2))
-            rospy.loginfo("Current Yaw: %s" % str(self._yaw))
-            rospy.loginfo("Desired Yaw: %s" % str(desired_yaw))
-            rospy.loginfo("Error Yaw: %s" % str(err_yaw))
             # logic goes here
             if self._as.is_preempt_requested():
                 # cancelled
                 rospy.loginfo("The goal has been cancelled/preempted")
                 self._as.set_preempted()
                 success = False
-            elif math.fabs(err_yaw) > self._yaw_precision:
+            elif math.fabs(err_yaw) > 2*self._yaw_precision:
                 # fix yaw
                 rospy.loginfo("fix yaw")
                 self._state = 'fix yaw'

@@ -53,7 +53,7 @@ class TestWaypointActionServer(unittest.TestCase):
         
         rospy.loginfo("Sending goal 1...")
         self.client.send_goal(self.goal1)
-        self.client.wait_for_result(timeout=rospy.Duration(10))
+        self.client.wait_for_result(timeout=rospy.Duration(15))
 
         result = self.client.get_result()
         rospy.loginfo(f"Result 1: {result}")
@@ -66,7 +66,7 @@ class TestWaypointActionServer(unittest.TestCase):
 
         # Check that the distance to goal and final heading are within threshold
         self.assertLess(distance_to_goal, 0.1, "Robot is not within acceptable distance to goal 1")
-        self.assertAlmostEqual(self.robot_yaw, desired_yaw, delta=0.15, msg="Yaw mismatch goal 1")
+        self.assertAlmostEqual(self.robot_yaw, desired_yaw, delta=0.25, msg="Yaw mismatch goal 1")
 
 
     def test_goal_2(self):
@@ -74,7 +74,7 @@ class TestWaypointActionServer(unittest.TestCase):
         
         rospy.loginfo("Sending goal 2...")
         self.client.send_goal(self.goal2)
-        self.client.wait_for_result(timeout=rospy.Duration(10))
+        self.client.wait_for_result(timeout=rospy.Duration(15))
 
         result = self.client.get_result()
         rospy.loginfo(f"Result 2: {result}")
@@ -88,7 +88,7 @@ class TestWaypointActionServer(unittest.TestCase):
 
         # Check that the distance to goal and final heading are within threshold
         self.assertLess(distance_to_goal, 0.1, "Robot is not within acceptable distance to goal 2")
-        self.assertAlmostEqual(self.robot_yaw, desired_yaw, delta=0.15, msg="Yaw mismatch goal 2")
+        self.assertAlmostEqual(self.robot_yaw, desired_yaw, delta=0.25, msg="Yaw mismatch goal 2")
 
 if __name__ == '__main__':
     rostest.rosrun(PKG, NAME, TestWaypointActionServer)

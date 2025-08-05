@@ -15,7 +15,7 @@ source devel/setup.bash
 rosrun tortoisebot_waypoints tortoisebot_action_server.py
 ```
 
-- In second terminal, run testing:
+- In second terminal, navigate to your ROS workspace and run testing:
 
 ```bash
 source devel/setup.bash
