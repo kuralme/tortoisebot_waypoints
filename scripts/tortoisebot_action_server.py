@@ -59,6 +59,10 @@ class WaypointActionClass(object):
         euler = transformations.euler_from_quaternion(quaternion)
         self._yaw = euler[2]
 
+    # Wrap angle to [-pi, pi]
+    def normalize_angle(self, angle):
+        return math.atan2(math.sin(angle), math.cos(angle))
+
     def goal_callback(self, goal):
         rospy.loginfo("goal %s received" % str(goal))
 
@@ -67,37 +71,37 @@ class WaypointActionClass(object):
 
         # define desired position and errors
         self._des_pos = goal.position
-        desired_yaw = math.atan2(self._des_pos.y - self._position.y, self._des_pos.x - self._position.x)
         err_pos = math.sqrt(pow(self._des_pos.y - self._position.y, 2) + pow(self._des_pos.x - self._position.x, 2))
-        err_yaw = desired_yaw - self._yaw
+        desired_yaw = math.atan2(self._des_pos.y - self._position.y, self._des_pos.x - self._position.x)
+        err_yaw = self.normalize_angle(desired_yaw - self._yaw)
 
         # perform task
         while err_pos > self._dist_precision and success:
             # update vars
-            desired_yaw = math.atan2(self._des_pos.y - self._position.y, self._des_pos.x - self._position.x)
-            err_yaw = desired_yaw - self._yaw
             err_pos = math.sqrt(pow(self._des_pos.y - self._position.y, 2) + pow(self._des_pos.x - self._position.x, 2))
+            desired_yaw = math.atan2(self._des_pos.y - self._position.y, self._des_pos.x - self._position.x)
+            err_yaw = self.normalize_angle(desired_yaw - self._yaw)
+
             # logic goes here
             if self._as.is_preempt_requested():
                 # cancelled
                 rospy.loginfo("The goal has been cancelled/preempted")
                 self._as.set_preempted()
                 success = False
-            elif math.fabs(err_yaw) > 2*self._yaw_precision:
+            elif math.fabs(err_yaw) > 8* self._yaw_precision:
                 # fix yaw
                 rospy.loginfo("fix yaw")
                 self._state = 'fix yaw'
                 twist_msg = Twist()
-                twist_msg.angular.z = 0.65 if err_yaw > 0 else -0.65
+                twist_msg.angular.z = 0.5 if err_yaw > 0 else -0.5
                 self._pub_cmd_vel.publish(twist_msg)
             else:
                 # go to point
                 rospy.loginfo("go to point")
                 self._state = 'go to point'
                 twist_msg = Twist()
-                twist_msg.linear.x = 0.6
-                twist_msg.angular.z = 0
-                # twist_msg.angular.z = 0.1 if err_yaw > 0 else -0.1
+                twist_msg.linear.x = 0.5
+                twist_msg.angular.z = 5* err_yaw
                 self._pub_cmd_vel.publish(twist_msg)
 
             # send feedback

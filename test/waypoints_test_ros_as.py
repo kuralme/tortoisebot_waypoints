@@ -53,7 +53,7 @@ class TestWaypointActionServer(unittest.TestCase):
         
         rospy.loginfo("Sending goal 1...")
         self.client.send_goal(self.goal1)
-        self.client.wait_for_result(timeout=rospy.Duration(15))
+        self.client.wait_for_result(timeout=rospy.Duration(25))
 
         result = self.client.get_result()
         rospy.loginfo(f"Result 1: {result}")
@@ -74,7 +74,7 @@ class TestWaypointActionServer(unittest.TestCase):
         
         rospy.loginfo("Sending goal 2...")
         self.client.send_goal(self.goal2)
-        self.client.wait_for_result(timeout=rospy.Duration(15))
+        self.client.wait_for_result(timeout=rospy.Duration(25))
 
         result = self.client.get_result()
         rospy.loginfo(f"Result 2: {result}")
