@@ -48,6 +48,9 @@ class TestWaypointActionServer(unittest.TestCase):
         euler = transformations.euler_from_quaternion(quaternion)
         self.robot_yaw = euler[2]
 
+    def normalize_angle(self, angle):
+        return math.atan2(math.sin(angle), math.cos(angle))
+
     def test_goal_1(self):
         '''Test to check position and yaw after moving to goal 1'''
         
@@ -63,11 +66,11 @@ class TestWaypointActionServer(unittest.TestCase):
         distance_to_goal = np.linalg.norm([self.robot_position.x - self.goal1.position.x, 
                                            self.robot_position.y - self.goal1.position.y])
         desired_yaw = math.atan2(self.goal1.position.y - 0.0, self.goal1.position.x - 0.0) # Angle to goal1 from origin
+        yaw_diff = self.normalize_angle(self.robot_yaw - desired_yaw)
 
         # Check that the distance to goal and final heading are within threshold
         self.assertLess(distance_to_goal, 0.1, "Robot is not within acceptable distance to goal 1")
-        self.assertAlmostEqual(self.robot_yaw, desired_yaw, delta=0.25, msg="Yaw mismatch goal 1")
-
+        self.assertAlmostEqual(yaw_diff, 0.0, delta=0.25, msg="Yaw mismatch goal 1")
 
     def test_goal_2(self):
         '''Test to check position and yaw after moving to goal 2'''
@@ -85,10 +88,11 @@ class TestWaypointActionServer(unittest.TestCase):
                                            self.robot_position.y - self.goal2.position.y])
         desired_yaw = math.atan2(self.goal2.position.y - self.goal1.position.y,
              self.goal2.position.x - self.goal1.position.x) # Angle to goal2 from goal1
+        yaw_diff = self.normalize_angle(self.robot_yaw - desired_yaw)
 
         # Check that the distance to goal and final heading are within threshold
         self.assertLess(distance_to_goal, 0.1, "Robot is not within acceptable distance to goal 2")
-        self.assertAlmostEqual(self.robot_yaw, desired_yaw, delta=0.25, msg="Yaw mismatch goal 2")
+        self.assertAlmostEqual(yaw_diff, 0.0, delta=0.25, msg="Yaw mismatch goal 2")
 
 if __name__ == '__main__':
     rostest.rosrun(PKG, NAME, TestWaypointActionServer)
